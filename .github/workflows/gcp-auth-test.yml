@@ -1,0 +1,28 @@
+name: GCP Authentication Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  authenticate:
+    name: Test GCP WIF Authentication
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Verify GCP authentication
+        run: |
+          gcloud config set project "${{ vars.GCP_PROJECT_ID }}"
+          gcloud projects describe "${{ vars.GCP_PROJECT_ID }}"
